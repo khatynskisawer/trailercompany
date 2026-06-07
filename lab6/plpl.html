@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Белорусские города — Меню с указателем</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Горизонтальное меню */
+        .menu {
+            background: #2c3e50;
+            padding: 15px 0;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .menu ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .menu a:hover {
+            background: #3498db;
+            transform: translateY(-2px);
+        }
+
+        /* Указатель-василёк */
+        .menu a::after {
+            content: '🌼';
+            position: absolute;
+            font-size: 20px;
+            opacity: 0;
+            transition: all 0.3s;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .menu a:hover::after {
+            opacity: 1;
+            bottom: -25px;
+        }
+
+        /* Контейнер для изображения */
+        .image-container {
+            text-align: center;
+            min-height: 500px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .image-container.active {
+            display: block;
+        }
+
+        .city-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            cursor: zoom-in;
+            transition: transform 0.2s ease; /* плавность при сбросе */
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .info {
+            text-align: center;
+            margin-top: 15px;
+            color: #555;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Белорусские города</h1>
+
+        <nav class="menu">
+            <ul>
+                <li><a href="#" data-city="minsk">Минск</a></li>
+                <li><a href="#" data-city="brest">Брест</a></li>
+                <li><a href="#" data-city="gomel">Гомель</a></li>
+                <li><a href="#" data-city="grodno">Гродно</a></li>
+                <li><a href="#" data-city="vitebsk">Витебск</a></li>
+            </ul>
+        </nav>
+
+        <div id="minsk" class="image-container active">
+            <img src="minsk.jpg" alt="Минск" class="city-image" id="img-minsk">
+            <div class="info">Минск — столица и крупнейший город Беларуси</div>
+        </div>
+
+        <div id="brest" class="image-container">
+            <img src="brest.jpg" alt="Брест" class="city-image" id="img-brest">
+            <div class="info">Брест — город-герой с знаменитой крепостью</div>
+        </div>
+
+        <div id="gomel" class="image-container">
+            <img src="gomel.jpg" alt="Гомель" class="city-image" id="img-gomel">
+            <div class="info">Гомель — второй по величине город Беларуси</div>
+        </div>
+
+        <div id="grodno" class="image-container">
+            <img src="hrodno.jpg" alt="Гродно" class="city-image" id="img-grodno">
+            <div class="info">Гродно — один из самых красивых старинных городов Беларуси</div>
+        </div>
+
+        <div id="vitebsk" class="image-container">
+            <img src="vitebsk.jpg" alt="Витебск" class="city-image" id="img-vitebsk">
+            <div class="info">Витебск — культурная столица Беларуси, родина Марка Шагала</div>
+        </div>
+    </div>
+
+    <script>
+        const links = document.querySelectorAll('.menu a');
+        const containers = document.querySelectorAll('.image-container');
+
+        links.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                containers.forEach(cont => cont.classList.remove('active'));
+                const cityId = this.getAttribute('data-city');
+                document.getElementById(cityId).classList.add('active');
+            });
+        });
+
+        function startIncreasingImageSize(img) {
+            const currentWidth = img.clientWidth;   
+            if (currentWidth < 700) {               
+                img.style.width = (currentWidth + 15) + "px";  
+                setTimeout(() => startIncreasingImageSize(img), 80); 
+            }
+        }
+        
+        const images = document.querySelectorAll('.city-image');
+        images.forEach(img => {
+            img.addEventListener('mouseenter', () => {
+                img.style.transition = 'none';           
+                startIncreasingImageSize(img);
+            });
+
+            img.addEventListener('mouseleave', () => {
+                img.style.transition = 'width 0.6s ease';
+                img.style.width = '';   
+            });
+        });
+    </script>
+
+</body>
+</html>
