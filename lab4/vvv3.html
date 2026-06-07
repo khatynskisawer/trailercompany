@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Анкета слушателя курсов</title>
+    
+</head>
+<body>
+
+    <h1>Анкета слушателя курсов</h1>
+
+    <form id="calculator-form">
+
+        <label for="fio">ФИО слушателя</label>
+        <input type="text" id="fio" placeholder="Введите ваши фамилию, имя и отчество" required>
+
+        <label for="course">Курс</label>
+        <select id="course">
+            <option value="python">Python — 35 000 ₽</option>
+            <option value="web">Веб-разработка — 45 000 ₽</option>
+            <option value="data">Анализ данных — 55 000 ₽</option>
+            <option value="ml">Машинное обучение — 65 000 ₽</option>
+        </select>
+
+        <label>Продолжительность</label>
+        <div class="radio-group">
+            <div class="radio-option">
+                <input type="radio" id="dur3" name="duration" value="3" checked >
+                <label for="dur3">3 месяца</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="dur6" name="duration" value="6" >
+                <label for="dur6">6 месяцев</label>
+            </div>
+            <div class="radio-option">
+                <input type="radio" id="dur12" name="duration" value="12" >
+                <label for="dur12">12 месяцев</label>
+            </div>
+        </div>
+
+        <label for="language">Язык общения</label>
+        <select id="language" >
+            <option value="ru">Русский</option>
+            <option value="en">Английский</option>
+            <option value="fr">Французский</option>
+            <option value="de">Немецкий</option>
+        </select>
+
+        <label for="reporting">Форма отчётности</label>
+        <select id="reporting" >
+            <option value="cert">Сертификат</option>
+            <option value="diploma">Диплом профпереподготовки</option>
+            <option value="full">Полный отчёт + рекомендации</option>
+        </select>
+
+        <button type="button" class="btn-blue" onclick="calculate()">Рассчитать стоимость</button>
+        <button type="button" class="btn-gray" onclick="clearForm()">Очистить форму</button>
+		<input type="submit" Отправить>
+
+    
+
+    <div id="results">
+        <h2>Результат расчёта</h2>
+        
+        <div style="margin-bottom:15px;">
+            <strong>Слушатель:</strong> <span id="resultFio">—</span>
+        </div>
+
+        <div class="cost-item">
+            Стоимость курса: <strong id="individualCost">—</strong> ₽
+        </div>
+        <div class="cost-item total">
+            Общая стоимость обучения: <strong id="totalCost">—</strong> ₽
+        </div>
+
+        <div style="margin-top:20px; color:#555;" id="summary"></div>
+    </div>
+	</form>
+
+    <script>
+        const basePrices = {
+            python: 35000,
+            web: 45000,
+            data: 55000,
+            ml: 65000
+        };
+
+        const durationMult = { '3': 0.8, '6': 1.0, '12': 1.4 };
+        const languageMult  = { ru: 1.0, en: 1.25, fr: 1.4, de: 1.3 };
+        const reportingMult = { cert: 1.0, diploma: 1.2, full: 1.35 };
+
+        const extra = 15000;
+
+        function calculate() {
+            const fio = document.getElementById('fio').value.trim();
+
+            if (!fio) {
+                alert('Пожалуйста, введите ФИО слушателя');
+                document.getElementById('fio').focus();
+                return;
+            }
+
+            const course = document.getElementById('course').value;
+            const duration = document.querySelector('input[name="duration"]:checked').value;
+            const lang = document.getElementById('language').value;
+            const report = document.getElementById('reporting').value;
+
+            let price = basePrices[course];
+            price *= durationMult[duration];
+            price *= languageMult[lang];
+            price *= reportingMult[report];
+
+            const coursePrice = Math.round(price);
+            const totalPrice   = Math.round(price + extra);
+            document.getElementById('resultFio').textContent = fio;
+            document.getElementById('individualCost').textContent = coursePrice.toLocaleString('ru-RU');
+            document.getElementById('totalCost').textContent     = totalPrice.toLocaleString('ru-RU');
+
+            const courseName = document.getElementById('course').selectedOptions[0].text.split(' — ')[0];
+
+            document.getElementById('summary').innerHTML = `
+                Курс: <b>${courseName}</b><br>
+                Длительность: <b>${duration} мес.</b><br>
+                Язык: <b>${document.getElementById('language').selectedOptions[0].text}</b><br>
+                Отчётность: <b>${document.getElementById('reporting').selectedOptions[0].text}</b>
+            `;
+            document.getElementById('results').style.display = 'block';
+        }
+
+        function clearForm() {
+            document.getElementById('calculator-form').reset();
+            document.getElementById('dur3').checked = true;
+            document.getElementById('results').style.display = 'none';   
+        }
+        window.onload = function() {
+            document.getElementById('results').style.display = 'none';
+        };
+    </script>
+
+</body>
+</html>
