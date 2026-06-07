@@ -1,0 +1,278 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Испытательные сроки сотрудников</title>
+    
+</head>
+<body>
+    <h1>Расчёт испытательных сроков</h1>
+
+    <h2>1. Дата через N дней</h2>
+    <input type="number" id="days" value="30" min="1">
+    <button onclick="calcDatePlusDays()">Рассчитать</button>
+    <p id="resultDate"></p>
+
+    <hr>
+
+    <h2>2. Сотрудники (7 человек)</h2>
+    <table id="employeesTable">
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Фамилия</th>
+                <th>Дата начала работы</th>
+                <th>Срок (месяцев)</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <button onclick="saveEmployees()">Сохранить данные</button>
+    <button onclick="resetToDefaults()">Сбросить к примерам</button>
+    <button onclick="loadFromStorage()">Загрузить сохранённые данные</button>
+
+    <hr>
+    <h2>Результаты</h2>
+    <h3>Дата окончания испытательного срока</h3>
+    <div id="allEnds"></div>
+
+    <h3>Заканчиваются в месяце</h3>
+    <input type="month" id="targetMonth" value="2026-04">
+    <button onclick="findEndingInMonth()">Найти</button>
+    <div id="endingList" class="result"></div>
+
+    <h3>Сроки уже закончились</h3>
+    <button onclick="showEndedBeforeNow()">Показать</button>
+    <div id="endedList" class="result"></div>
+
+    <h3>На испытательном сроке на дату</h3>
+    <input type="date" id="checkDate">
+    <button onclick="countOnDate()">Рассчитать</button>
+    <div id="countResult" class="result"></div>
+
+    <script>
+        let employeesData = [];
+
+        function addMonths(date, months) {
+            const result = new Date(date);
+            result.setMonth(result.getMonth() + months);
+            return result;
+        }
+
+        function formatDate(date) {
+            return date.toLocaleDateString('ru-RU');
+        }
+
+        // Сохранение в localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('employeesData', JSON.stringify(employeesData));
+        }
+
+        // Загрузка из localStorage
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('employeesData');
+            if (saved) {
+                employeesData = JSON.parse(saved);
+                // Преобразуем строки дат обратно в объекты Date
+                employeesData.forEach(emp => {
+                    emp.startDate = new Date(emp.startDate);
+                });
+                return true;
+            }
+            return false;
+        }
+
+        // Инициализация таблицы (пустая или с примерами)
+        function initTable() {
+            const tbody = document.querySelector('#employeesTable tbody');
+            tbody.innerHTML = '';
+
+            const names = ['Иванов', 'Петров', 'Сидорова', 'Козлов', 'Смирнова', 'Васильев', 'Морозова'];
+            const starts = ['2025-12-15', '2026-01-10', '2026-02-20', '2025-05-01', '2026-03-05', '2026-04-01', '2024-11-20'];
+            const monthsList = [6, 3, 2, 12, 1, 3, 6];
+
+            for (let i = 1; i <= 7; i++) {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${i}</td>
+                        <td><input type="text" id="name${i}" value="${names[i-1]}"></td>
+                        <td><input type="date" id="start${i}" value="${starts[i-1]}"></td>
+                        <td><input type="number" id="months${i}" value="${monthsList[i-1]}" min="1" style="width:70px;"></td>
+                    </tr>`;
+            }
+        }
+
+        // Заполнение формы данными из employeesData
+        function fillFormFromData() {
+            for (let i = 1; i <= 7; i++) {
+                const emp = employeesData[i-1];
+                if (emp) {
+                    document.getElementById(`name${i}`).value = emp.name || '';
+                    document.getElementById(`start${i}`).value = emp.startDate.toISOString().split('T')[0];
+                    document.getElementById(`months${i}`).value = emp.months || '';
+                }
+            }
+        }
+
+        // Сохранение данных сотрудников
+        function saveEmployees() {
+            employeesData = [];
+
+            for (let i = 1; i <= 7; i++) {
+                const name = document.getElementById(`name${i}`).value.trim();
+                const startStr = document.getElementById(`start${i}`).value;
+                const months = parseInt(document.getElementById(`months${i}`).value);
+
+                if (!name) {
+                    alert(`Ошибка: введите фамилию сотрудника №${i}`);
+                    return;
+                }
+                if (!startStr) {
+                    alert(`Ошибка: выберите дату начала работы для сотрудника №${i}`);
+                    return;
+                }
+                if (isNaN(months) || months < 1) {
+                    alert(`Ошибка: длительность испытательного срока для сотрудника №${i} должна быть не меньше 1 месяца!`);
+                    document.getElementById(`months${i}`).focus();
+                    return;
+                }
+
+                employeesData.push({
+                    name: name,
+                    startDate: new Date(startStr),
+                    months: months
+                });
+            }
+
+            saveToLocalStorage();           // сохраняем в localStorage
+            alert('✅ Данные сотрудников успешно сохранены в браузере!');
+            calculateAll();
+        }
+
+        // Загрузка сохранённых данных в форму
+        function loadFromStorage() {
+            if (loadFromLocalStorage()) {
+                fillFormFromData();
+                calculateAll();
+                alert('✅ Данные загружены из localStorage');
+            } else {
+                alert('Нет сохранённых данных');
+            }
+        }
+
+        // Сброс к примерам (и очистка localStorage)
+        function resetToDefaults() {
+            if (confirm('Сбросить все данные и очистить хранилище?')) {
+                localStorage.removeItem('employeesData');
+                employeesData = [];
+                initTable();
+                document.getElementById('allEnds').innerHTML = '';
+                document.getElementById('endingList').innerHTML = '';
+                document.getElementById('endedList').innerHTML = '';
+                document.getElementById('countResult').innerHTML = '';
+                alert('Данные сброшены');
+            }
+        }
+
+        // Расчёт дат окончания для всех
+        function calculateAll() {
+            if (employeesData.length === 0) {
+                document.getElementById('allEnds').innerHTML = '<p style="color:red">Сначала сохраните данные сотрудников!</p>';
+                return;
+            }
+
+            let html = `<table><thead><tr><th>Фамилия</th><th>Начало</th><th>Срок</th><th>Окончание</th></tr></thead><tbody>`;
+
+            employeesData.forEach(emp => {
+                const endDate = addMonths(emp.startDate, emp.months);
+                html += `
+                    <tr>
+                        <td><b>${emp.name}</b></td>
+                        <td>${formatDate(emp.startDate)}</td>
+                        <td>${emp.months} мес.</td>
+                        <td>${formatDate(endDate)}</td>
+                    </tr>`;
+            });
+
+            html += `</tbody></table>`;
+            document.getElementById('allEnds').innerHTML = html;
+        }
+
+        // Остальные функции (без изменений)
+        function calcDatePlusDays() {
+            const days = parseInt(document.getElementById('days').value);
+            const resultElement = document.getElementById('resultDate');
+
+            if (isNaN(days) || days <= 0) {
+                resultElement.innerHTML = '<span class="error">Ошибка: количество дней должно быть положительным числом (больше 0)!</span>';
+                return;
+            }
+
+            const future = new Date();
+            future.setDate(future.getDate() + days);
+            resultElement.innerHTML = `Через <b>${days}</b> дней будет: <b>${formatDate(future)}</b>`;
+        }
+
+        function findEndingInMonth() {
+            if (employeesData.length === 0) return alert('Сначала сохраните данные сотрудников!');
+            const [year, month] = document.getElementById('targetMonth').value.split('-').map(Number);
+            const names = [];
+
+            employeesData.forEach(emp => {
+                const end = addMonths(emp.startDate, emp.months);
+                if (end.getFullYear() === year && end.getMonth() === month - 1) {
+                    names.push(emp.name);
+                }
+            });
+
+            document.getElementById('endingList').innerHTML = names.length
+                ? `<b>Заканчиваются:</b> ${names.join(', ')}`
+                : 'Никто не заканчивает в этом месяце.';
+        }
+
+        function showEndedBeforeNow() {
+            if (employeesData.length === 0) return alert('Сначала сохраните данные сотрудников!');
+            const now = new Date();
+            const names = [];
+
+            employeesData.forEach(emp => {
+                const end = addMonths(emp.startDate, emp.months);
+                if (end < now) names.push(emp.name);
+            });
+
+            document.getElementById('endedList').innerHTML = names.length
+                ? `<b>Срок закончился у:</b> ${names.join(', ')}`
+                : 'Все сотрудники ещё на испытательном сроке.';
+        }
+
+        function countOnDate() {
+            if (employeesData.length === 0) return alert('Сначала сохраните данные сотрудников!');
+            const checkStr = document.getElementById('checkDate').value;
+            if (!checkStr) return alert('Выберите дату!');
+
+            const checkDate = new Date(checkStr);
+            let count = 0;
+
+            employeesData.forEach(emp => {
+                const endDate = addMonths(emp.startDate, emp.months);
+                if (emp.startDate <= checkDate && checkDate <= endDate) count++;
+            });
+
+            document.getElementById('countResult').innerHTML = 
+                `На выбранную дату на испытательном сроке: <b>${count}</b> сотрудников`;
+        }
+
+        window.onload = function() {
+            initTable();
+            // Пытаемся загрузить сохранённые данные
+            if (loadFromLocalStorage()) {
+                fillFormFromData();
+                calculateAll();
+            }
+        };
+    </script>
+</body>
+</html>
