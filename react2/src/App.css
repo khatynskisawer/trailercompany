@@ -1,0 +1,69 @@
+.app {
+  font-family: 'Segoe UI', sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.professions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.profession-btn {
+  padding: 16px;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.2s;
+}
+
+.profession-btn:hover {
+  border-color: #0066ff;
+  transform: translateY(-3px);
+}
+
+.profession-btn.active {
+  border-color: #0066ff;
+  background: #f0f7ff;
+  font-weight: bold;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.menu-card {
+  padding: 20px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s;
+}
+
+.menu-card:hover {
+  border-color: #0066ff;
+  box-shadow: 0 10px 20px rgba(0, 102, 255, 0.1);
+  transform: translateY(-5px);
+}
+
+.link-hint {
+  color: #0066ff;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  display: inline-block;
+}
