@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Калькулятор курсов</title>
+</head>
+<body>
+<h1>Выбор курса</h1>
+<form>
+Курс:  
+<select id="course" size="4">
+  <option value="0" selected>— выберите —</option>
+  <option value="python">Python-разработчик</option>
+  <option value="frontend">Frontend-разработчик</option>
+  <option value="java">Java-разработчик</option>
+  <option value="data">Data Analyst / Data Scientist</option>
+  <option value="qa">Тестировщик)</option>
+</select>
+
+<br><br>
+Продолжительность:<br>
+<input type="radio" name="dur" value="3" checked> 3 мес<br>
+<input type="radio" name="dur" value="6"> 6 мес<br>
+<input type="radio" name="dur" value="9"> 9 мес
+<br><br>
+
+Язык общения:<br>
+<input type="radio" name="lang" value="ru" checked> русский<br>
+<input type="radio" name="lang" value="en"> английский
+<br><br>
+
+Проверка заданий:<br>
+<input type="radio" name="check" value="auto" checked> только автотесты<br>
+<input type="radio" name="check" value="mentor"> с ментором<br>
+<input type="radio" name="check" value="live"> живые ревью + созвоны
+
+<br><br>
+<button type="button" onclick="calc()">Посчитать</button>
+<div id="out" style="margin-top:20px;"></div>
+</form>
+<script>
+const prices = {
+  python: 7800,
+  frontend: 9200,
+  java: 8900,
+  data: 10800,
+  qa: 6800
+};
+
+const checkMult = {
+  auto: 1,
+  mentor: 1.2,
+  live: 1.45
+};
+
+function calc() {
+  const course = document.getElementById("course").value;
+  if (course === "0") {
+    document.getElementById("out").innerHTML = "Выберите курс";
+    return;
+  }
+  let months = document.querySelector('input[name="dur"]:checked').value;
+  let lang   = document.querySelector('input[name="lang"]:checked').value;
+  let check  = document.querySelector('input[name="check"]:checked').value;
+
+  let base = prices[course];
+  let coefLang  = (lang === "en") ? 1.3 : 1;
+  let coefCheck = checkMult[check];
+  let total = base * (months / 6) * coefLang * coefCheck;
+  total = Math.round(total);
+  let courseName = document.getElementById("course").options[document.getElementById("course").selectedIndex].text;
+  document.getElementById("out").innerHTML = `
+    Курс: ${courseName}<br>
+    Длительность: ${months} мес<br>
+    Язык: ${lang === "en" ? "английский" : "русский"}<br>
+    Проверка: ${check === "auto" ? "автотесты" : check === "mentor" ? "с ментором" : "живые ревью + созвоны"}<br><br>
+    <b>Стоимость: ${total.toLocaleString("ru-RU")} ₽</b>
+  `;
+}
+</script>
+</body>
+</html>

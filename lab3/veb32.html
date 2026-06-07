@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Числа до отмены</title>
+</head>
+<body>
+
+<h1>Вводите числа (Отмена — завершить)</h1>
+<div id="result"></div>
+<script>
+let numbers = [];
+let sum = 0;
+while (true) {
+    let input = prompt("Введите число:", "");
+
+    if (input === null) {
+        break;
+    }
+    let num = Number(input);
+    if (isNaN(num)) {
+        alert("Нужно ввести число");
+        continue;
+    }
+    numbers.push(num);
+    sum += num;
+}
+let output = "";
+if (numbers.length === 0) {
+    output = "<p>Ничего не введено</p>";
+} else {
+    output = `
+        <p>Чисел: ${numbers.length}</p>
+        <p>Сумма: ${sum}</p>
+        <p>Числа: ${numbers.join(", ")}</p>
+    `;}
+document.getElementById("result").innerHTML = output;
+</script>
+
+</body>
+</html>
