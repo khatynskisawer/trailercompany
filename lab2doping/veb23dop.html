@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Обмен значений</title>
+</head>
+<body>
+<h1>Обмен значений</h1>
+<p>Значение A: <input id="a" type="text" value="1"></p>
+<p>Значение B: <input id="b" type="text" value="2"></p>
+<p>Выйдите из любого поля (нажмите Tab или кликните вне поля) — значения поменяются местами</p>
+<div id="info" style="margin-top:20px; font-family:monospace;">Сейчас: A = "1", B = "2"</div>
+<script>
+  const inputA= document.getElementById('a');
+  const inputB= document.getElementById('b');
+  const info= document.getElementById('info');
+  function swapValues() {
+    const temp = inputA.value;
+    inputA.value = inputB.value;
+    inputB.value = temp;
+    info.textContent = `Сейчас: A = "${inputA.value}", B = "${inputB.value}"`;}
+  inputA.addEventListener('blur', swapValues);
+  inputB.addEventListener('blur', swapValues);
+</script>
+</body>
+</html>

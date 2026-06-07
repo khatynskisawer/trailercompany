@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Площадь треугольника</title>
+</head>
+<body>
+<form>
+<h2>Координаты точек</h2>
+<p>A: <input id="x1" type="number"> <input id="y1" type="number"></p>
+<p>B: <input id="x2" type="number"> <input id="y2" type="number"></p>
+<p>C: <input id="x3" type="number"> <input id="y3" type="number"></p>
+<div id="result">Площадь:</div>
+</form>
+<script>
+  const inputs = document.querySelectorAll('input');
+  const result = document.getElementById('result');
+  function calc() {
+    const x1 = +document.getElementById('x1').value || 0;
+    const y1 = +document.getElementById('y1').value || 0;
+    const x2 = +document.getElementById('x2').value || 0;
+    const y2 = +document.getElementById('y2').value || 0;
+    const x3 = +document.getElementById('x3').value || 0;
+    const y3 = +document.getElementById('y3').value || 0;
+
+    const area = Math.abs(
+      (x1*(y2 - y3) + x2*(y3 - y1) + x3*(y1 - y2)) / 2
+    );
+    result.textContent = area === 0  ? "Площадь = 0 (точки на одной прямой)" : `Площадь = ${area.toFixed(3)}`;
+  }
+  inputs.forEach(input => {
+    input.addEventListener('focus', calc);
+  });
+</script>
+</body>
+</html>

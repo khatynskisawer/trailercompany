@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Расстояние до начала координат</title>
+</head>
+<body>
+<h2>Расстояние от точки до (0,0)</h2>
+<p>x: <input id="x" type="number" step="any" value="0"> y: <input id="y" type="number" step="any" value="0"></p>
+<p>Выделите (выберите) любое из чисел выше — расстояние посчитается</p>
+<div id="result" style="margin-top:20px; font-size:1.2em;">Расстояние = ?</div>
+<script>
+  const inputs = document.querySelectorAll('input[type="number"]');
+  const result = document.getElementById('result');
+
+  function calcDistance() {
+    const x = Number(document.getElementById('x').value) || 0;
+    const y = Number(document.getElementById('y').value) || 0;
+    const distance = Math.sqrt(x * x + y * y);
+    result.textContent = 
+      `Расстояние = ${distance.toFixed(4)}`;}
+  inputs.forEach(input => {
+    input.addEventListener('select', calcDistance);
+  });
+
+  inputs.forEach(input => {
+    input.addEventListener('input', calcDistance);
+  });
+
+  calcDistance();
+</script>
+
+</body>
+</html>
